@@ -100,24 +100,33 @@ function set_bk_breakpoint(pc_addr){
     dbg_print("ins size",size)
     Memory.protect(pc_addr,8, 'rwx')
     moto_code=pc_addr.add(size).readByteArray(2)
-    var thumbwriter= new ThumbWriter(pc_addr.add(size))
-    //pc_addr.add(size).writeU16(bkpt_bytecode)
-    thumbwriter.putBytes(bkpt_bytecode_arr)
+    if(Process.arch=="arm"){
+        Memory.patchCode(pc_addr.add(size), 4, function (code) {
+            var thumbwriter= new ThumbWriter(pc_addr.add(size))
+            thumbwriter.putBytes(bkpt_bytecode_arr)
+            thumbwriter.flush()
+          });
     
+    }else{
+        console.log("arch not support")
+    }
     Memory.protect(pc_addr,8, 'r-x')
     excp_pc_arr.push(pc_addr.add(size))
-    thumbwriter.flush()
+    
     dbg_print("set_bk_breakpoint",pc_addr.add(size))
 }
 
 function resume_bk_breakpoint(pc_addr){
-    Memory.protect(pc_addr,100, 'rwx')
-    var thumbwriter= new ThumbWriter(pc_addr)
-
-    //pc_addr.writeU16(moto_code)
-    thumbwriter.putBytes(moto_code)
-    Memory.protect(pc_addr,100, 'r-x')
-    thumbwriter.flush()
+    if(Process.arch=="arm"){
+        Memory.patchCode(pc_addr, 4, function (code) {
+            var thumbwriter= new ThumbWriter(pc_addr)
+            thumbwriter.putBytes(moto_code)
+            thumbwriter.flush()
+          });
+    
+    }else{
+        console.log("arch not support")
+    }
     dbg_print("resume_bk_breakpoint",pc_addr)
 }
 
