@@ -4,63 +4,46 @@
 ### 这是一个基于Frida的，Android端，native层，内存访问trace
 
 ```
-使用方法 python3 BreakPoint.py <Android中运行程序的进程名>
-示例 python3 BreakPoint.py com.example.jnitest
-```
-#### 当出现---->时输入以下命令
+usage: main.py [-h] -l LENGTH [-n NAME] (-b BREAK | -o OFFSET | -s SYMBOL)
 
-```
-b 绝对地址
-o so的名称!相对地址
-s so的名称!符号
+optional arguments:
+  -h, --help            show this help message and exit
+  -l LENGTH, --length LENGTH
+                        输入断点的长度最长不能超过0
+  -n NAME, --name NAME  输入程序包名
+  -b BREAK, --break BREAK
+                        输入绝对地址，例如0x12345678
+  -o OFFSET, --offset OFFSET
+                        输入相对地址，例如libxxx.so@0x1234
+  -s SYMBOL, --symbol SYMBOL
+                        输入符号，例如libxxx.so@test_value
+
 ```
 #### 测试程序主要代码
 
 ```c
-void check_func(){
-    my_number=my_number+10;
-    if(my_number==20)
-        LOGI("%s","right");
-
+_Noreturn void* thread_1(void * arg){
+    while (true){
+        for (int i =0;i<4;i++){
+            *((char *)&test_value+i) = *((char *)&my_test+i);
+        }
+        test_value++;
+        sleep(1);
+    }
 }
+ pthread_create(&thread1, nullptr, thread_1, nullptr);
 ```
 
 #### 使用示例
 ```
-meipengtao@MacBook-Pro fridaMemoryBreakPointer % python3 BreakPoint.py com.example.jnitest
-Session(pid=22367)
-run successfully
-Session(pid=22367)---->o libnative-lib.so!0x4004
-Session(pid=22367)---->
-0xd9f1a004
+python 需要安装模块 hexdump
 
-type: read
-data target address: 0xd9f1a004 libnative-lib.so!0x4004
-PC : 0xd9f167f0 libnative-lib.so!_Z10check_funcv+0x7
-ASM str: ldr r1, [r0]
-Register: r1: 0xff98633c r0: 0xd9f1a004 
-0xd9f1a004:
-           0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F  0123456789ABCDEF
-00000000  0a 00 00 00 00 00 00 00 00                       .........
-
-type: write
-data target address: 0xd9f1a004 libnative-lib.so!0x4004
-PC : 0xd9f167f4 libnative-lib.so!_Z10check_funcv+0xb
-ASM str: str r1, [r0]
-Register: r1: 0x14 r0: 0xd9f1a004 
-0xd9f1a004:
-           0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F  0123456789ABCDEF
-00000000  0a 00 00 00 00 00 00 00 00                       .........
-
-type: read
-data target address: 0xd9f1a004 libnative-lib.so!0x4004
-PC : 0xd9f167f6 libnative-lib.so!_Z10check_funcv+0xd
-ASM str: ldr r0, [r0]
-Register: r0: 0xd9f1a004 r0: 0xd9f1a004 
-0xd9f1a004:
-           0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F  0123456789ABCDEF
-00000000  14 00 00 00 00 00 00 00 00                       .........
+adb install -t ./app-debug.apk
+python3 ./main.py -s libnative-lib.so@test_value -l 4 -n com.mpt.myapplication
 ```
-
+![!image](./assert/1.gif)
 #### 完成度
-目前bug比较多，不限于只能设置一次且一个断点，随时有可能crash，厉害的大佬可以pr。
+目前仅支持arm64，arm32待开发。
+
+#### 已知问题
+多线程同时有概率崩溃
