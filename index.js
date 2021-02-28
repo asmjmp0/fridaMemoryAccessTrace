@@ -167,7 +167,7 @@ function handle_cmd(info,details){
 rpc.exports = {
     getdevicearch(){
         //获取程序架构
-        return Process.arch 
+        return Process.arch
     },
     getplatform(){
         //获取平台架构
@@ -196,7 +196,7 @@ rpc.exports = {
            });
            op.wait()
             return  handle_cmd(break_info,details)
-       }) 
+       })
     },
     getprotectranges(){
         //枚举内存保护标志

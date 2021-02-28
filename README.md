@@ -41,7 +41,7 @@ python 需要安装模块 hexdump
 adb install -t ./app-debug.apk
 python3 ./main.py -s libnative-lib.so@test_value -l 4 -n com.mpt.myapplication
 ```
-![!image](./assert/1.gif)
+![!image](assets/1.gif)
 #### 完成度
 目前仅支持arm64，arm32待开发。
 
