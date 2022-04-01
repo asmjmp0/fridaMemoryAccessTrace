@@ -17,6 +17,7 @@ def handle_it(exception_details):
                                                    'break_len']):
             # 命中断点,展示内容
             data.break_point_info['current_pc'] = int(exception_details['address'], 16)
+            data.break_point_info['current_lr'] = int(exception_details['context']["lr"], 16)
             data.break_point_info['cmd'] = 3
             access_violation_flag = True
         elif int(memory['address'], 16) in range(data.break_point_info['break_page_info'][0],
@@ -24,6 +25,7 @@ def handle_it(exception_details):
                                                      'pagesize']):
             # 没有命中断点，但是命中下断点的页面
             data.break_point_info['current_pc'] = int(exception_details['address'], 16)
+            data.break_point_info['current_lr'] = int(exception_details['context']["lr"], 16)
             data.break_point_info['cmd'] = 1
             access_violation_flag = True
         else:
@@ -40,7 +42,7 @@ def handle_it(exception_details):
             data.rpc.api._script.post(wrapper_to_post('exception_ret', {'info': 'breakpoint', 'cmd': 100}))
             return
         for index in range(0, len(data.soft_breakpoint_runtime)):
-            if int(exception_details['address'], 16) == data.soft_breakpoint_runtime[index]['break_addr']:
+            if int(exception_details['address'], 16) == data.soft_breakpoint_runtime[index]['break_addr'] or int(exception_details['address'], 16)+1 == data.soft_breakpoint_runtime[index]['break_addr']:
                 data.soft_breakpoint_runtime[index]['cmd'] = 2
                 data.soft_breakpoint_runtime[index]['break_page_info'] = data.break_point_info['break_page_info']
                 data.soft_breakpoint_runtime[index]['index'] = index

@@ -22,6 +22,7 @@ break_point_info = {
     'break_addr': 0,
     'break_len': 0,
     'current_pc': 0,
+    'current_lr':0,
     'break_page_info': [],
     'cmd': 0
 }

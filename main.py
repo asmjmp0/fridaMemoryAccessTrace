@@ -1,3 +1,4 @@
+from cmath import pi
 import frida
 from rpcFunc import rpcFunc
 import data_info as data
@@ -97,22 +98,26 @@ def get_args():
     parse = argparse.ArgumentParser()
     group = parse.add_mutually_exclusive_group(required=True)
 
-    parse.add_argument('-l', '--length', help='输入断点的长度最长不能超过%d' % (data.proc_info['pagesize']), required=True, type=int)
+    parse.add_argument('-l', '--length', help='输入断点的长度最长不能超过pagesize', required=True, type=int)
     parse.add_argument('-n', '--name', help='输入程序包名', type=str)
+    parse.add_argument('-lp','--listproc', help='展示进程',action='store_true')
 
     group.add_argument('-b', '--break', help='输入绝对地址，例如0x12345678', type=str)
     group.add_argument('-o', '--offset', help='输入相对地址，例如libxxx.so@0x1234', type=str)
     group.add_argument('-s', '--symbol', help='输入符号，例如libxxx.so@test_value', type=str)
 
     data.args = vars(parse.parse_args())
-
+    if data.args['listproc']:
+        lists = frida.get_usb_device().enumerate_processes()
+        for item in lists:
+            print(item)
+        exit(0)
     if data.args['name']:
         data.PACKAGE = data.args['name']
 
 
 def handle_breakinfo_args():
     args_list = ['break', 'offset', 'symbol']
-
     def wrapper_input_str(s: str, l: int, input_type: str):
         if l > data.proc_info['pagesize']:
             raise Exception('length must be less than %d' % (data.proc_info['pagesize']))

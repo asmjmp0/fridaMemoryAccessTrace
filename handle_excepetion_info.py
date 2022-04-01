@@ -71,19 +71,20 @@ test_str = '''
 
 
 class exception_info:
-    def __init__(self, info: dict, arch: str):
+    def __init__(self, info: dict, arch:str):
         self._info = info
         self._arch = arch
         self._out_dict = {}
-
         self._wrapper_info()
-
+        
     def __handle_reg_str(self, reg_str: str):
-        if 'arm64' == self._arch:
+        ret_str = ''
+        if ('arm64' == self._arch):
             ret_str = reg_str.replace('w', 'x')
+        elif ('arm' == self._arch):
+            ret_str = reg_str
         else:
             raise Exception(self._arch, "not support")
-
         return ret_str
 
     def _handle_operands(self, operands_list):
