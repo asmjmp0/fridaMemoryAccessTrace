@@ -1,5 +1,5 @@
 # fridaMemoryAccessTrace
-android memory access trace utiliy powered by frida framework
+android memory access trace utility powered by frida framework
 ## Start
 ```
 usage: main.py [-h] -l LENGTH [-n NAME] [-lp] (-b BREAK | -o OFFSET | -s SYMBOL)
