@@ -1,9 +1,4 @@
 const arch = Process.arch;
-let breakpoint_ins = null; //不同架构不同的软断点hex 要小写
-let writer = null;
-// const break_mem = Memory.alloc(4);
-// const memcpy_addr = Module.findExportByName('libc.so', 'memcpy');
-// const memcpy = new NativeFunction(memcpy_addr, 'pointer', ['pointer', 'pointer', 'int']);
 
 var breakpoint_desc = {
     "breakpoint_ins" :'',
