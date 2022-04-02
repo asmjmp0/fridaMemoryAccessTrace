@@ -98,13 +98,13 @@ def get_args():
     parse = argparse.ArgumentParser()
     group = parse.add_mutually_exclusive_group(required=True)
 
-    parse.add_argument('-l', '--length', help='输入断点的长度最长不能超过pagesize', required=True, type=int)
-    parse.add_argument('-n', '--name', help='输入程序包名', type=str)
-    parse.add_argument('-lp','--listproc', help='展示进程',action='store_true')
+    parse.add_argument('-l', '--length', help='breakpoint length can not over pagesize', required=True, type=int)
+    parse.add_argument('-n', '--name', help='process name', type=str)
+    parse.add_argument('-lp','--listproc', help='list process',action='store_true')
 
-    group.add_argument('-b', '--break', help='输入绝对地址，例如0x12345678', type=str)
-    group.add_argument('-o', '--offset', help='输入相对地址，例如libxxx.so@0x1234', type=str)
-    group.add_argument('-s', '--symbol', help='输入符号，例如libxxx.so@test_value', type=str)
+    group.add_argument('-b', '--break', help='absolute address, eg. 0x12345678', type=str)
+    group.add_argument('-o', '--offset', help='relative address, eg. libxxx.so@0x1234', type=str)
+    group.add_argument('-s', '--symbol', help='get address by symbol eg. libxxx.so@test_value', type=str)
 
     data.args = vars(parse.parse_args())
     if data.args['listproc']:
