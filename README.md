@@ -46,7 +46,7 @@ python3 ./main.py -s libmyapplication32.so@test_value -l 4 -n MyApplication32
 ```
 **64 bit architecture**
 ![!image](assets/1.gif)
-**64 bit architecture**
+**32 bit architecture**
 ![!image](assets/32.png)
 
 ## Known problem
