@@ -110,7 +110,7 @@ class exception_info:
         if symbol["moduleName"]:
             pc_str = pc_str + symbol["moduleName"] + "!" + symbol["name"]
         self._out_dict['PC'] = pc_str
-        self._out_dict['ins str'] = self._info["ins"]
+        self._out_dict['ins'] = self._info["ins"]
 
         operands = self._info["operands"]
         self._out_dict['Register'] = self._handle_operands(operands)

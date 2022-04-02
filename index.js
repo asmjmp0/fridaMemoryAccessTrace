@@ -1,4 +1,5 @@
 const arch = Process.arch;
+const thumb_erase_maskcode = 0xfffffffffffe
 
 var breakpoint_desc = {
     "breakpoint_ins" :'',
@@ -9,7 +10,6 @@ var breakpoint_desc = {
 };
 
 (_=>{
-    console.log(arch)
     switch (arch) {
         case "arm64":
             breakpoint_desc["breakpoint_ins"] = '000020d4'
@@ -53,7 +53,7 @@ function checkbreakpoint(pc_addr){
             return buf2hex(rpc.exports.readdata(pc_addr,4)) === breakpoint_desc["breakpoint_ins"]
         case "arm":
             if(check_pc_thumb(pc_addr)){
-                return buf2hex(rpc.exports.readdata(pc_addr.and(0xfffffffffffe),2)) === breakpoint_desc["breakpoint_ins"]
+                return buf2hex(rpc.exports.readdata(pc_addr.and(thumb_erase_maskcode),2)) === breakpoint_desc["breakpoint_ins"]
             }else{
                 return buf2hex(rpc.exports.readdata(pc_addr,4)) === breakpoint_desc["thumb_breakpoint_ins"]
             }
@@ -90,7 +90,7 @@ function resume_pagebreak_write_softbreakpoint(break_info,writer){
     pc_addr = pc_addr.add(size)
     let ins_writer = new writer(pc_addr);
     if(check_pc_thumb(lr_addr)){
-        ins_writer = new breakpoint_desc["thumb_writer"](pc_addr.and(0xfffffffffffe))
+        ins_writer = new breakpoint_desc["thumb_writer"](pc_addr.and(thumb_erase_maskcode))
     }
     
     const store_size = Instruction.parse(pc_addr).size;
@@ -99,7 +99,7 @@ function resume_pagebreak_write_softbreakpoint(break_info,writer){
     let send_dict = {};
     send_dict['break_addr'] = pc_addr
     send_dict['break_len'] = store_size
-    send_dict['ins_content'] = buf2hex(rpc.exports.readdata(pc_addr.and(0xfffffffffffe),store_size))
+    send_dict['ins_content'] = buf2hex(rpc.exports.readdata(pc_addr.and(thumb_erase_maskcode),store_size))
     send_dict['__tag'] = 'set_soft_breakpoint'
     send(send_dict)
 
@@ -161,7 +161,7 @@ function resume_softbreakpoint_set_pagebreak(soft_breakpoint_info,writer){
             break
         case "arm":
             if(check_pc_thumb(pc_addr)){
-                ins_writer = new breakpoint_desc["thumb_writer"](pc_addr.and(0xfffffffffffe))
+                ins_writer = new breakpoint_desc["thumb_writer"](pc_addr.and(thumb_erase_maskcode))
             }
             break
         default:
